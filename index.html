@@ -1,148 +1,439 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我是郭炫逸！</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>办公室大家庭</title>
     <style>
-        /* 全局样式设置 */
-        body {
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            justify-content: space-between;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
         }
 
-        /* 图片容器样式，设置相对定位，方便后续图片定位切换，同时让容器宽度占满页面 */
-     .image-slider {
-            position: relative;
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(120deg, #fff5f6 0%, #ffffff 100%); /* 更温馨的渐变 */
+        }
+
+        /* 固定文字样式 */
+        .fixed-text {
+            text-align: center;
+            padding: 20px 0;
+            margin: 10px 0;
+        }
+        .fixed-text span {
+            font-size: 26px;
+            color: #ff7a85; /* 柔和粉橙 */
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 4px rgba(255,122,133,0.2);
+            padding: 10px 24px;
+            background: #fff;
+            border-radius: 30px;
+            border: 2px solid #ffccd5;
+        }
+
+        /* 音频容器 */
+        .audio-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto 15px;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        audio {
             width: 100%;
+            outline: none;
+        }
+
+        /* 图片轮播容器 */
+        .image-slider {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 65vh;
+            margin: 0 auto;
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background-image: url('/img/love.png');
-            background-size: cover;
-            background-repeat: no-repeat;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(255,122,133,0.15);
+            background: url('/img/love.png') center/cover no-repeat;
         }
 
-        img {
+        /* 轮播图片 */
+        .image-slider picture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .image-slider picture.active {
+            opacity: 1;
+        }
+        .image-slider img {
             width: auto;
-            max-width: 100%;
-            max-height: 100%;
-            display: block;
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            object-fit: contain;
         }
 
-        /* 音频元素样式，可根据喜好调整 */
-        audio {
-            width: 100%;
-        }
-
-        /* 页面底部样式（示例），可根据实际情况调整或移除 */
-        footer {
-            background-color: #ccc;
-            text-align: center;
-            padding: 10px;
-        }
-
-        #scrolling-text-container {
-            overflow: hidden;
-            width: 100%;
-            height: 30px;
-            margin-bottom: 10px;
-        }
-
-        #scrolling-text {
-            display: inline-block;
-            white-space: nowrap;
-            color: #000; /* 文字颜色 */
+        /* 轮播切换按钮 */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            border: none;
             font-size: 20px;
-            animation: scrollText 10s linear infinite;
+            color: #ff7a85;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        .slider-btn:hover {
+            background: #fff;
+        }
+        .prev-btn { left: 15px; }
+        .next-btn { right: 15px; }
+
+        /* 轮播指示器 */
+        .slider-indicators {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .indicator.active {
+            background: #ff7a85;
         }
 
-        @keyframes scrollText {
-            from {
-                transform: translateX(100%);
-            }
-            to {
-                transform: translateX(-100%);
-            }
+        /* 弹幕相关 */
+        .danmaku-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 不影响轮播交互 */
+            z-index: 20;
+        }
+        .danmaku-item {
+            position: absolute;
+            white-space: nowrap;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transform: translateX(0);
+        }
+        .danmaku-input-area {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 30;
+        }
+        .danmaku-input {
+            padding: 9px 15px;
+            border-radius: 22px;
+            border: 1px solid #ffccd5;
+            outline: none;
+            width: 220px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .danmaku-btn {
+            padding: 9px 18px;
+            border-radius: 22px;
+            background: #ff7a85;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(255,122,133,0.2);
+            transition: background 0.3s;
+        }
+        .danmaku-btn:hover {
+            background: #ff6370;
+        }
+
+        /* 底部样式 */
+        footer {
+            background: #fff;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 20px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+            color: #888;
+            font-size: 14px;
         }
     </style>
 </head>
-
 <body>
-    <!-- 音频元素，用于播放音乐，设置autoplay让其自动播放，loop让其循环播放 -->
-    <audio autoplay loop>
-        <source src="/img/freecompress-特别的人.mp3" type="audio/mpeg">
-        <!-- 如果浏览器不支持MP3格式，可添加其他格式备用，如下面示例（可选） -->
-        <source src="your-music-file.ogg" type="audio/ogg">
-        您的浏览器不支持音频播放。
-    </audio>
-
-    <div id="scrolling-text-container">
-        <span id="scrolling-text">这不是黑历史 这是我的来时路！</span>
+    <div class="audio-container">
+        <audio autoplay loop>
+            <source src="/img/freecompress-特别的人.mp3" type="audio/mpeg">
+            您的浏览器不支持音频播放。
+        </audio>
     </div>
 
+    <div class="fixed-text">
+        <span>办公室大家庭！</span>
+    </div>
+
+    <!-- 弹幕输入区 -->
+    <div class="danmaku-input-area">
+        <input type="text" class="danmaku-input" placeholder="发个弹幕互动吧~">
+        <button class="danmaku-btn">发送</button>
+    </div>
+
+    <!-- 图片轮播容器 -->
     <div class="image-slider">
-         <picture>
-            <source media="(max-width: 600px)" srcset="/img/010.jpg">
-            <source media="(max-width: 1000px)" srcset="/img/010.jpg">
-            <img src="/img/010.jpg" alt="图片示例">
+        <!-- 弹幕容器 -->
+        <div class="danmaku-container"></div>
+        
+        <!-- 轮播图片 -->
+        <picture class="active">
+            <source media="(max-width: 600px)" srcset="/img/01.jpg">
+            <img src="./img/05.jpg" alt="美好瞬间">
         </picture>
         <picture>
-            <source media="(max-width: 600px)" srcset="/img/009.png">
-            <source media="(max-width: 1000px)" srcset="/img/009.png">
-            <img src="/img/009.png" alt="图片示例">
+            <source media="(max-width: 600px)" srcset="/img/02.jpg">
+            <img src="./img/02.jpg" alt="美好瞬间">
         </picture>
         <picture>
-            <source media="(max-width: 600px)" srcset="/img/002.jpg">
-            <source media="(max-width: 1000px)" srcset="/img/002.jpg">
-            <img src="/img/002.jpg" alt="图片示例">
+            <source media="(max-width: 600px)" srcset="/img/03.jpg">
+            <img src="./img/03.jpg" alt="美好瞬间">
         </picture>
         <picture>
-            <source media="(max-width: 600px)" srcset="/img/003.jpg">
-            <source media="(max-width: 1000px)" srcset="/img/003.jpg">
-            <img src="/img/003.jpg" alt="图片示例">
+            <source media="(max-width: 600px)" srcset="/img/04.jpg">
+            <img src="./img/04.jpg" alt="美好瞬间">
         </picture>
         <picture>
             <source media="(max-width: 600px)" srcset="/img/004.jpg">
-            <source media="(max-width: 1000px)" srcset="/img/004.jpg">
-            <img src="/img/004.jpg" alt="图片示例">
+            <img src="./img/01.jpg" alt="美好瞬间">
         </picture>
-         <picture>
+        <picture>
             <source media="(max-width: 600px)" srcset="/img/011.jpg">
-            <source media="(max-width: 1000px)" srcset="/img/011.jpg">
-            <img src="/img/011.jpg" alt="图片示例">
+            <img src="./img/07.jpg" alt="美好瞬间">
         </picture>
+        <picture>
+            <source media="(max-width: 600px)" srcset="/img/03.jpg">
+            <img src="./img/08.jpg" alt="美好瞬间">
+        </picture>
+        <picture>
+            <source media="(max-width: 600px)" srcset="/img/04.jpg">
+            <img src="./img/09.jpg" alt="美好瞬间">
+        </picture>
+        <picture>
+            <source media="(max-width: 600px)" srcset="/img/004.jpg">
+            <img src="./img/10.jpg" alt="美好瞬间">
+        </picture>
+        <picture>
+            <source media="(max-width: 600px)" srcset="/img/011.jpg">
+            <img src="./img/11.jpg" alt="美好瞬间">
+        </picture>
+        <picture>
+            <source media="(max-width: 600px)" srcset="/img/011.jpg">
+            <img src="./img/12.jpg" alt="美好瞬间">
+        </picture>
+
+        <!-- 轮播按钮 -->
+        <button class="slider-btn prev-btn">←</button>
+        <button class="slider-btn next-btn">→</button>
+        
+        <!-- 轮播指示器容器 -->
+        <div class="slider-indicators"></div>
     </div>
 
+    <footer>
+        愿办公室的每一天都温暖且美好 ❤️
+    </footer>
+
     <script>
-        // 获取所有的picture元素，每个picture里包含对应的图片
+        // 轮播相关
         const pictures = document.querySelectorAll('.image-slider picture');
         let currentIndex = 0;
-        const intervalTime = 3000; // 轮播间隔时间，单位毫秒，这里设置为3秒，可根据需求修改
+        const intervalTime = 3000;
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        const indicatorsContainer = document.querySelector('.slider-indicators');
 
-        function showNextImage() {
-            // 隐藏当前显示的图片
-            pictures[currentIndex].style.display = 'none';
-            currentIndex++;
-            if (currentIndex >= pictures.length) {
-                currentIndex = 0;
-            }
-            // 显示下一张图片
-            pictures[currentIndex].style.display = 'block';
+        // 生成轮播指示器
+        function createIndicators() {
+            pictures.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.classList.add('indicator');
+                if (index === currentIndex) indicator.classList.add('active');
+                indicator.addEventListener('click', () => {
+                    pictures[currentIndex].classList.remove('active');
+                    currentIndex = index;
+                    pictures[currentIndex].classList.add('active');
+                    updateIndicators();
+                });
+                indicatorsContainer.appendChild(indicator);
+            });
         }
 
-        // 页面加载完成后立即显示第一张图片
-        pictures[0].style.display = 'block';
+        // 更新指示器状态
+        function updateIndicators() {
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach((ind, idx) => {
+                ind.classList.toggle('active', idx === currentIndex);
+            });
+        }
 
-        // 设置定时器，每隔一段时间切换一次图片，实现自动轮播
+        // 切换下一张
+        function showNextImage() {
+            pictures[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % pictures.length;
+            pictures[currentIndex].classList.add('active');
+            updateIndicators();
+        }
+
+        // 切换上一张
+        function showPrevImage() {
+            pictures[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex - 1 + pictures.length) % pictures.length;
+            pictures[currentIndex].classList.add('active');
+            updateIndicators();
+        }
+
+        // 轮播按钮事件
+        prevBtn.addEventListener('click', showPrevImage);
+        nextBtn.addEventListener('click', showNextImage);
+
+        // 自动轮播
         setInterval(showNextImage, intervalTime);
+
+        // 初始化指示器
+        createIndicators();
+
+        // ---------------------- 弹幕持久化核心逻辑 ----------------------
+        const danmakuContainer = document.querySelector('.danmaku-container');
+        const danmakuInput = document.querySelector('.danmaku-input');
+        const danmakuBtn = document.querySelector('.danmaku-btn');
+        const DANMAKU_STORAGE_KEY = 'office_danmaku_list'; // 本地存储键名
+
+        // 随机柔和颜色
+        const softColors = ['#ff7a85', '#ffb3ba', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff'];
+        function getRandomColor() {
+            return softColors[Math.floor(Math.random() * softColors.length)];
+        }
+
+        // 1. 从本地存储读取弹幕列表
+        function getDanmakuList() {
+            const stored = localStorage.getItem(DANMAKU_STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        // 2. 保存弹幕到本地存储
+        function saveDanmaku(danmakuData) {
+            const list = getDanmakuList();
+            list.push(danmakuData);
+            // 可选：限制存储数量（避免数据过多），比如最多存200条
+            if (list.length > 200) list.shift(); 
+            localStorage.setItem(DANMAKU_STORAGE_KEY, JSON.stringify(list));
+        }
+
+        // 3. 渲染单条弹幕（通用方法，新发送/历史弹幕都用这个）
+        function renderDanmaku(danmakuData, delay = 0) {
+            const danmaku = document.createElement('span');
+            danmaku.classList.add('danmaku-item');
+            danmaku.textContent = danmakuData.text;
+            danmaku.style.color = danmakuData.color;
+            danmaku.style.fontSize = danmakuData.fontSize;
+            danmaku.style.top = danmakuData.top;
+            danmaku.style.right = '-300px';
+
+            // 添加到容器
+            danmakuContainer.appendChild(danmaku);
+
+            // 延迟执行动画（避免历史弹幕重叠）
+            setTimeout(() => {
+                // 滚动动画
+                const duration = 8 + Math.random() * 4;
+                danmaku.style.transition = `transform ${duration}s linear`;
+                danmaku.style.transform = `translateX(-${danmakuContainer.offsetWidth + 300}px)`;
+
+                // 动画结束后移除DOM（但本地存储仍保留）
+                setTimeout(() => {
+                    if (danmaku.parentNode) danmaku.remove();
+                }, duration * 1000);
+            }, delay);
+        }
+
+        // 4. 初始化：渲染所有历史弹幕
+        function initDanmaku() {
+            const list = getDanmakuList();
+            // 错开延迟渲染（每条间隔0.5秒，避免重叠）
+            list.forEach((item, index) => {
+                renderDanmaku(item, index * 500);
+            });
+        }
+
+        // 5. 发送新弹幕（存本地+渲染）
+        function sendDanmaku(text) {
+            if (!text.trim()) return;
+
+            // 构造弹幕数据
+            const sliderHeight = danmakuContainer.offsetHeight;
+            const danmakuData = {
+                text: text.trim(),
+                color: getRandomColor(),
+                fontSize: `${14 + Math.random() * 6}px`,
+                top: `${Math.random() * (sliderHeight - 40)}px`
+            };
+
+            // 保存到本地
+            saveDanmaku(danmakuData);
+            // 渲染新弹幕
+            renderDanmaku(danmakuData);
+
+            // 清空输入框
+            danmakuInput.value = '';
+        }
+
+        // 6. 绑定发送事件
+        danmakuBtn.addEventListener('click', () => sendDanmaku(danmakuInput.value));
+        danmakuInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendDanmaku(danmakuInput.value);
+        });
+
+        // 页面加载时初始化历史弹幕
+        window.addEventListener('load', initDanmaku);
     </script>
 </body>
-
 </html>
