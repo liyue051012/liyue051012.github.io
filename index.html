@@ -2,10 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 强化移动端视口适配：禁止缩放、适配屏幕宽度、强制初始缩放 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- 适配iOS全屏 -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="white"> <!-- iOS状态栏样式 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
     <title>办公室大家庭</title>
     <style>
         * {
@@ -20,32 +19,30 @@
             display: flex;
             flex-direction: column;
             background: linear-gradient(120deg, #fff5f6 0%, #ffffff 100%);
-            overflow-x: hidden; /* 禁止横向滚动（手机端关键） */
+            overflow-x: hidden;
         }
 
-        /* 固定文字样式 - 移动端字体适配 */
         .fixed-text {
             text-align: center;
-            padding: 15px 0; /* 移动端减少内边距 */
+            padding: 15px 0;
             margin: 8px 0;
         }
         .fixed-text span {
-            font-size: clamp(18px, 5vw, 26px); /* 响应式字体：手机18px，大屏26px */
+            font-size: clamp(18px, 5vw, 26px);
             color: #ff7a85;
             font-weight: 600;
-            letter-spacing: 2px; /* 移动端减少字间距 */
+            letter-spacing: 2px;
             text-shadow: 0 2px 4px rgba(255,122,133,0.2);
             padding: 8px 20px;
             background: #fff;
             border-radius: 30px;
             border: 2px solid #ffccd5;
-            display: inline-block; /* 防止文字换行溢出 */
-            max-width: 90%; /* 手机端不超宽 */
+            display: inline-block;
+            max-width: 90%;
         }
 
-        /* 音频容器 - 移动端适配 */
         .audio-container {
-            width: 95%; /* 手机端更宽 */
+            width: 95%;
             max-width: 600px;
             margin: 0 auto 12px;
             background: #fff;
@@ -58,14 +55,13 @@
             outline: none;
         }
 
-        /* 图片轮播容器 - 移动端高度适配（核心） */
         .image-slider {
             position: relative;
-            width: 95%; /* 手机端更宽 */
+            width: 95%;
             max-width: 800px;
-            height: auto; /* 取消固定高度，改为自适应 */
-            min-height: 40vh; /* 手机端最小高度 */
-            max-height: 65vh; /* 大屏最大高度 */
+            height: auto;
+            min-height: 40vh;
+            max-height: 65vh;
             margin: 0 auto;
             flex: 1;
             display: flex;
@@ -76,8 +72,8 @@
             box-shadow: 0 8px 32px rgba(255,122,133,0.15);
         }
 
-        /* 轮播图片 - 强化移动端适配 */
-        .image-slider picture {
+        /* ✅ 修复CSS图片样式冲突 - 核心修改点 */
+        .image-slider .img-item {
             position: absolute;
             top: 0;
             left: 0;
@@ -89,24 +85,22 @@
             opacity: 0;
             transition: opacity 0.8s ease;
         }
-        .image-slider picture.active {
+        .image-slider .img-item.active {
             opacity: 1;
         }
         .image-slider img {
-            width: 100%; /* 手机端优先占满宽度 */
             max-width: 95%;
             max-height: 95%;
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            object-fit: contain; /* 确保图片不变形 */
+            object-fit: contain;
         }
 
-        /* 轮播切换按钮 - 移动端增大点击区域 */
         .slider-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 50px; /* 手机端增大按钮 */
+            width: 50px;
             height: 50px;
             background: rgba(255,255,255,0.9);
             border-radius: 50%;
@@ -117,28 +111,26 @@
             z-index: 10;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: background 0.3s;
-            /* 增加点击区域（移动端关键） */
             padding: 0;
-            touch-action: manipulation; /* 防止移动端双击缩放 */
+            touch-action: manipulation;
         }
         .slider-btn:hover {
             background: #fff;
         }
-        .prev-btn { left: 10px; } /* 手机端减少边距 */
+        .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
 
-        /* 轮播指示器 - 移动端适配 */
         .slider-indicators {
             position: absolute;
-            bottom: 15px; /* 手机端上移 */
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 6px; /* 手机端减少间距 */
+            gap: 6px;
             z-index: 10;
         }
         .indicator {
-            width: 10px; /* 手机端略小 */
+            width: 10px;
             height: 10px;
             border-radius: 50%;
             background: rgba(255,255,255,0.6);
@@ -150,7 +142,6 @@
             background: #ff7a85;
         }
 
-        /* 弹幕相关 - 移动端适配 */
         .danmaku-container {
             position: absolute;
             top: 0;
@@ -166,18 +157,17 @@
             font-weight: 500;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
             transform: translateX(0);
-            font-size: clamp(12px, 3vw, 16px); /* 移动端弹幕字体适配 */
+            font-size: clamp(12px, 3vw, 16px);
         }
-        /* 弹幕输入区 - 移动端适配 */
         .danmaku-input-area {
             position: fixed;
-            bottom: 70px; /* 手机端上移，避免遮挡 */
+            bottom: 70px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             gap: 8px;
             z-index: 30;
-            width: 90%; /* 手机端占90%宽度 */
+            width: 90%;
             max-width: 350px;
         }
         .danmaku-input {
@@ -185,7 +175,7 @@
             border-radius: 22px;
             border: 1px solid #ffccd5;
             outline: none;
-            width: 100%; /* 手机端自适应宽度 */
+            width: 100%;
             min-width: 150px;
             font-size: 14px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -200,14 +190,13 @@
             font-size: 14px;
             box-shadow: 0 2px 8px rgba(255,122,133,0.2);
             transition: background 0.3s;
-            flex-shrink: 0; /* 防止按钮被压缩 */
+            flex-shrink: 0;
             touch-action: manipulation;
         }
         .danmaku-btn:hover {
             background: #ff6370;
         }
 
-        /* 底部样式 - 移动端适配 */
         footer {
             background: #fff;
             text-align: center;
@@ -215,13 +204,12 @@
             margin-top: 15px;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
             color: #888;
-            font-size: clamp(12px, 3vw, 14px); /* 移动端字体适配 */
+            font-size: clamp(12px, 3vw, 14px);
         }
 
-        /* 移动端专属样式（屏幕宽度<768px） */
         @media (max-width: 768px) {
             .image-slider {
-                max-height: 55vh; /* 手机端降低最大高度 */
+                max-height: 55vh;
             }
             .danmaku-input-area {
                 bottom: 60px;
@@ -233,7 +221,6 @@
             }
         }
 
-        /* 小屏手机（<480px） */
         @media (max-width: 480px) {
             .image-slider {
                 max-height: 50vh;
@@ -247,10 +234,7 @@
 </head>
 <body>
     <div class="audio-container">
-        <!-- 手机端音频自动播放修复：添加id，通过用户交互触发 -->
         <audio id="bg-audio" loop>
-            <!-- 统一图片/音频路径：建议全部改为相对路径（确保手机端能访问） -->
-            <!-- 注意：/img/ 是服务器根目录，./img/ 是当前目录，需确认文件实际位置 -->
             <source src="./img/freecompress-特别的人.mp3" type="audio/mpeg">
             您的浏览器不支持音频播放。
         </audio>
@@ -260,61 +244,45 @@
         <span>办公室大家庭！</span>
     </div>
 
-    <!-- 弹幕输入区 -->
     <div class="danmaku-input-area">
         <input type="text" class="danmaku-input" placeholder="发个弹幕互动吧~">
         <button class="danmaku-btn">发送</button>
     </div>
 
-    <!-- 图片轮播容器 -->
+    <!-- ✅ 核心修复：删掉错误的picture标签，改用纯div+img，路径全部统一 - 重中之重 -->
     <div class="image-slider">
-        <!-- 弹幕容器 -->
         <div class="danmaku-container"></div>
-        
-        <!-- 统一图片路径：全部改为 ./img/ （确保手机端能加载） -->
-        <!-- 修复source和img路径不一致问题 -->
-        <picture class="active">
-            <source media="(max-width: 600px)" srcset="./img/01.jpg">
-            <img src="./img/05.jpg" alt="美好瞬间" loading="lazy"> <!-- lazy加载优化手机性能 -->
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/02.jpg">
-            <img src="./img/02.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/03.jpg">
-            <img src="./img/03.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/04.jpg">
-            <img src="./img/04.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/011.jpg">
-            <img src="./img/07.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/03.jpg">
-            <img src="./img/08.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/004.jpg">
-            <img src="./img/10.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/011.jpg">
-            <img src="./img/11.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
-        <picture>
-            <source media="(max-width: 600px)" srcset="./img/011.jpg">
-            <img src="./img/12.jpg" alt="美好瞬间" loading="lazy">
-        </picture>
+        <!-- 轮播图片项：class统一为img-item，第一张默认active，路径全部为./img/xxx.jpg 请核对你的图片文件名！ -->
+        <div class="img-item active">
+            <img src="./img/01.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/02.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/03.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/04.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/07.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/08.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/10.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/11.jpg" alt="美好瞬间">
+        </div>
+        <div class="img-item">
+            <img src="./img/12.jpg" alt="美好瞬间">
+        </div>
 
-        <!-- 轮播按钮 -->
         <button class="slider-btn prev-btn">←</button>
         <button class="slider-btn next-btn">→</button>
-        
-        <!-- 轮播指示器容器 -->
         <div class="slider-indicators"></div>
     </div>
 
@@ -323,15 +291,14 @@
     </footer>
 
     <script>
-        // 轮播相关
-        const pictures = document.querySelectorAll('.image-slider picture');
+        // ✅ 修复JS选择器：从原来的picture改为 .img-item 核心修改点
+        const pictures = document.querySelectorAll('.image-slider .img-item');
         let currentIndex = 0;
         const intervalTime = 3000;
         const prevBtn = document.querySelector('.prev-btn');
         const nextBtn = document.querySelector('.next-btn');
         const indicatorsContainer = document.querySelector('.slider-indicators');
 
-        // 生成轮播指示器
         function createIndicators() {
             pictures.forEach((_, index) => {
                 const indicator = document.createElement('div');
@@ -347,7 +314,6 @@
             });
         }
 
-        // 更新指示器状态
         function updateIndicators() {
             const indicators = document.querySelectorAll('.indicator');
             indicators.forEach((ind, idx) => {
@@ -355,7 +321,6 @@
             });
         }
 
-        // 切换下一张
         function showNextImage() {
             pictures[currentIndex].classList.remove('active');
             currentIndex = (currentIndex + 1) % pictures.length;
@@ -363,7 +328,6 @@
             updateIndicators();
         }
 
-        // 切换上一张
         function showPrevImage() {
             pictures[currentIndex].classList.remove('active');
             currentIndex = (currentIndex - 1 + pictures.length) % pictures.length;
@@ -371,41 +335,33 @@
             updateIndicators();
         }
 
-        // 轮播按钮事件
         prevBtn.addEventListener('click', showPrevImage);
         nextBtn.addEventListener('click', showNextImage);
 
-        // 自动轮播
         let carouselTimer = setInterval(showNextImage, intervalTime);
-        // 鼠标/触摸暂停轮播（移动端适配）
         const slider = document.querySelector('.image-slider');
         slider.addEventListener('touchstart', () => clearInterval(carouselTimer));
         slider.addEventListener('touchend', () => carouselTimer = setInterval(showNextImage, intervalTime));
         slider.addEventListener('mouseenter', () => clearInterval(carouselTimer));
         slider.addEventListener('mouseleave', () => carouselTimer = setInterval(showNextImage, intervalTime));
 
-        // 初始化指示器
         createIndicators();
 
-        // ---------------------- 弹幕持久化核心逻辑 ----------------------
         const danmakuContainer = document.querySelector('.danmaku-container');
         const danmakuInput = document.querySelector('.danmaku-input');
         const danmakuBtn = document.querySelector('.danmaku-btn');
         const DANMAKU_STORAGE_KEY = 'office_danmaku_list';
 
-        // 随机柔和颜色
         const softColors = ['#ff7a85', '#ffb3ba', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff'];
         function getRandomColor() {
             return softColors[Math.floor(Math.random() * softColors.length)];
         }
 
-        // 1. 从本地存储读取弹幕列表
         function getDanmakuList() {
             const stored = localStorage.getItem(DANMAKU_STORAGE_KEY);
             return stored ? JSON.parse(stored) : [];
         }
 
-        // 2. 保存弹幕到本地存储
         function saveDanmaku(danmakuData) {
             const list = getDanmakuList();
             list.push(danmakuData);
@@ -413,7 +369,6 @@
             localStorage.setItem(DANMAKU_STORAGE_KEY, JSON.stringify(list));
         }
 
-        // 3. 渲染单条弹幕（通用方法）
         function renderDanmaku(danmakuData, delay = 0) {
             const danmaku = document.createElement('span');
             danmaku.classList.add('danmaku-item');
@@ -436,7 +391,6 @@
             }, delay);
         }
 
-        // 4. 初始化：渲染所有历史弹幕
         function initDanmaku() {
             const list = getDanmakuList();
             list.forEach((item, index) => {
@@ -444,7 +398,6 @@
             });
         }
 
-        // 5. 发送新弹幕
         function sendDanmaku(text) {
             if (!text.trim()) return;
 
@@ -462,40 +415,26 @@
             danmakuInput.value = '';
         }
 
-        // 6. 绑定发送事件（移动端支持回车/点击）
         danmakuBtn.addEventListener('click', () => sendDanmaku(danmakuInput.value));
         danmakuInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') sendDanmaku(danmakuInput.value);
         });
-        // 移动端触摸发送（兼容）
         danmakuBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // 防止触发点击两次
+            e.preventDefault();
             sendDanmaku(danmakuInput.value);
         });
 
-        // ---------------------- 手机端音频播放修复 ----------------------
         const bgAudio = document.getElementById('bg-audio');
-        // 监听用户首次交互（点击/触摸）触发音频播放
         function playAudioOnInteraction() {
             bgAudio.play().catch(err => console.log('音频播放失败：', err));
-            // 只触发一次
             document.removeEventListener('click', playAudioOnInteraction);
             document.removeEventListener('touchstart', playAudioOnInteraction);
         }
-        // 绑定用户交互事件
         document.addEventListener('click', playAudioOnInteraction);
         document.addEventListener('touchstart', playAudioOnInteraction);
 
-        // 页面加载时初始化历史弹幕
         window.addEventListener('load', () => {
             initDanmaku();
-            // 确保图片加载完成后适配高度
-            const sliderImgs = document.querySelectorAll('.image-slider img');
-            sliderImgs.forEach(img => {
-                img.onload = () => {
-                    slider.style.height = 'auto'; // 图片加载后重置高度
-                };
-            });
         });
     </script>
 </body>
